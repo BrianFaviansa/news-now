@@ -6,7 +6,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.faviansa.newsnow.ui.detail.DetailScreen
+import com.faviansa.newsnow.ui.favorite.FavoriteScreen
 import com.faviansa.newsnow.ui.home.HomeScreen
+import com.faviansa.newsnow.ui.search.SearchScreen
 
 @Composable
 fun AppNavigation(modifier: Modifier = Modifier) {
@@ -18,10 +20,40 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         modifier = modifier
     ) {
         composable<Routes.Home> {
-            HomeScreen()
+            HomeScreen(
+                onNavigate = { index ->
+                    when (index) {
+                        0 -> {}
+                        1 -> navController.navigate(Routes.Search)
+                        2 -> navController.navigate(Routes.Favorite)
+                    }
+                }
+            )
         }
         composable<Routes.NewsDetail> {
             DetailScreen()
+        }
+        composable<Routes.Search> {
+            SearchScreen(
+                onNavigate = { index ->
+                    when (index) {
+                        0 -> navController.navigate(Routes.Home)
+                        1 -> {}
+                        2 -> navController.navigate(Routes.Favorite)
+                    }
+                }
+            )
+        }
+        composable<Routes.Favorite> {
+            FavoriteScreen(
+                onNavigate = { index ->
+                    when (index) {
+                        0 -> navController.navigate(Routes.Home)
+                        1 -> navController.navigate(Routes.Search)
+                        2 -> {}
+                    }
+                }
+            )
         }
     }
 

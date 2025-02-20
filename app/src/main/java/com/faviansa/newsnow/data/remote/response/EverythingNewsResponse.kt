@@ -1,8 +1,8 @@
-package com.faviansa.newsnow.data.remote
+package com.faviansa.newsnow.data.remote.response
 
 import com.google.gson.annotations.SerializedName
 
-data class HeadlineNewsResponse(
+data class EverythingNewsResponse(
 
 	@field:SerializedName("totalResults")
 	val totalResults: Int? = null,
@@ -47,5 +47,5 @@ data class Source(
 	val name: String? = null,
 
 	@field:SerializedName("id")
-	val id: String? = null
+	val id: Any? = null
 )

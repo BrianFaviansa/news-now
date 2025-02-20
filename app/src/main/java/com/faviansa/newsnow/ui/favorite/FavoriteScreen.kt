@@ -1,4 +1,4 @@
-package com.faviansa.newsnow.ui.home
+package com.faviansa.newsnow.ui.favorite
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,11 +15,11 @@ import com.faviansa.newsnow.ui.navigation.NewsNowBottomNav
 import com.faviansa.newsnow.ui.theme.NewsNowTheme
 
 @Composable
-fun HomeScreen(
+fun FavoriteScreen(
     onNavigate: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var selectedItem by remember { mutableIntStateOf(0) }
+    var selectedItem by remember { mutableIntStateOf(2) }
 
     Scaffold(
         bottomBar = {
@@ -44,9 +44,9 @@ fun HomeScreen(
 
 @Preview
 @Composable
-private fun HomeScreenPreview() {
+private fun FavoriteScreenPreview() {
     NewsNowTheme {
-        HomeScreen(
+        FavoriteScreen(
             onNavigate = {}
         )
     }
