@@ -18,5 +18,7 @@ interface NewsApiService {
         @Query("sortBy") sortBy: String = "relevancy",
         @Query("searchIn") searchIn: String = "title",
         @Query("q") query: String = "economy",
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int,
     ) : EverythingNewsResponse
 }

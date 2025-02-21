@@ -31,7 +31,10 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             )
         }
         composable<Routes.NewsDetail> {
-            DetailScreen()
+            DetailScreen(
+                onNavigateUp = { navController.navigateUp() },
+                newsLink = ""
+            )
         }
         composable<Routes.Search> {
             SearchScreen(
@@ -56,5 +59,4 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             )
         }
     }
-
 }

@@ -6,13 +6,13 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "news")
 data class NewsEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int? = null,
-    val source: String? = null,
-    val author: String? = null,
-    val title: String? = null,
-    val description: String? = null,
-    val url: String? = null,
-    val urlToImage: String? = null,
-    val publishedAt: String? = null,
-    val content: String? = null
+    val id: Int = 0,
+    val source: String = "Unknown Source",
+    val author: String = "Unknown Author",
+    val title: String = "No Title",
+    val description: String = "No Description",
+    val url: String = "",
+    val urlToImage: String = "",
+    val publishedAt: String = "Unknown Date",
+    val content: String = "No Content"
 )
