@@ -8,6 +8,7 @@ import androidx.paging.map
 import com.faviansa.newsnow.data.local.database.NewsDatabase
 import com.faviansa.newsnow.data.mapper.DataMapper
 import com.faviansa.newsnow.data.paging.NewsRemoteMediator
+import com.faviansa.newsnow.data.paging.SearchPagingSource
 import com.faviansa.newsnow.data.remote.NewsApiService
 import com.faviansa.newsnow.domain.model.News
 import com.faviansa.newsnow.domain.repository.INewsRepository
@@ -37,23 +38,49 @@ class NewsRepository(
     }
 
     override suspend fun getNews(newsId: Int): News {
-       return newsDao.getNews(newsId)
+        return DataMapper.mapEntityToDomain(newsDao.getNews(newsId))
     }
 
     override fun searchNews(query: String): Flow<PagingData<News>> {
-        TODO("Not yet implemented")
+        return Pager(
+            config = PagingConfig(
+                pageSize = ITEMS_PER_PAGE,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = { SearchPagingSource(query, apiService) }
+        ).flow.map { pagingData ->
+            pagingData.map { newsEntity ->
+                DataMapper.mapEntityToDomain(newsEntity)
+            }
+        }
     }
 
     override fun getAllFavoriteNews(): Flow<PagingData<News>> {
-        TODO("Not yet implemented")
+        return Pager(
+            config = PagingConfig(
+                pageSize = ITEMS_PER_PAGE,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = { favoriteNewsDao.getAllFavoriteNews() }
+        ).flow.map { pagingData ->
+            pagingData.map { newsEntity ->
+                DataMapper.mapFavoriteToDomain(newsEntity)
+            }
+        }
     }
 
     override suspend fun toggleFavoriteStatus(news: News) {
-        TODO("Not yet implemented")
+        val isFavorite = favoriteNewsDao.isNewsFavorite(news.id)
+        val favoriteNews = DataMapper.mapFavoriteToEntity(news)
+        if (isFavorite) {
+            favoriteNewsDao.deleteFavoriteNews(favoriteNews)
+        } else {
+            favoriteNewsDao.insertFavoriteNews(favoriteNews)
+        }
     }
 
     override fun getFavoriteNewsIds(): Flow<List<Int>> {
-        TODO("Not yet implemented")
+        return favoriteNewsDao.getFavoriteNewsIds()
     }
 
 }

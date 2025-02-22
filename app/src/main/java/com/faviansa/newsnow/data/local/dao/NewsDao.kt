@@ -6,7 +6,6 @@ import androidx.room.Query
 import androidx.room.Upsert
 import com.faviansa.newsnow.data.local.entity.NewsEntity
 import com.faviansa.newsnow.data.local.entity.NewsRemoteKeys
-import com.faviansa.newsnow.domain.model.News
 
 @Dao
 interface NewsDao {
@@ -15,7 +14,7 @@ interface NewsDao {
     fun getAllNews(): PagingSource<Int, NewsEntity>
 
     @Query("SELECT * FROM news WHERE id = :newsId")
-    suspend fun getNews(newsId : Int) : News
+    suspend fun getNews(newsId : Int) : NewsEntity
 
     @Upsert
     suspend fun insertNews(newsList: List<NewsEntity>)
