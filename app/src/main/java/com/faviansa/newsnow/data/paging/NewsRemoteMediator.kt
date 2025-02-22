@@ -7,52 +7,115 @@ import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.faviansa.newsnow.data.local.database.NewsDatabase
 import com.faviansa.newsnow.data.local.entity.NewsEntity
+import com.faviansa.newsnow.data.local.entity.NewsRemoteKeys
 import com.faviansa.newsnow.data.mapper.DataMapper
 import com.faviansa.newsnow.data.remote.NewsApiService
-import retrofit2.HttpException
-import java.io.IOException
 
 @OptIn(ExperimentalPagingApi::class)
 class NewsRemoteMediator(
-    private val newsApiService: NewsApiService,
-    private val newsDatabase: NewsDatabase
+    private val apiService: NewsApiService,
+    private val database: NewsDatabase,
 ) : RemoteMediator<Int, NewsEntity>() {
+
+    companion object {
+        private const val STARTING_PAGE_INDEX = 1
+    }
+
+    private val newsDao = database.newsDao()
 
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, NewsEntity>
-    ): RemoteMediator.MediatorResult {
-        return try {
-            // Determine the page key based on load type
-            val page = when (loadType) {
-                LoadType.REFRESH -> 1
-                LoadType.PREPEND -> return RemoteMediator.MediatorResult.Success(endOfPaginationReached = true)
+        state: PagingState<Int, NewsEntity>,
+    ): MediatorResult {
+        try {
+            val currentPage = when (loadType) {
+                LoadType.REFRESH -> {
+                    val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
+                    remoteKeys?.nextPage?.minus(1) ?: STARTING_PAGE_INDEX
+                }
+
+                LoadType.PREPEND -> {
+                    val remoteKeys = getRemoteKeyForFirstItem(state)
+                    val prevPage = remoteKeys?.prevPage ?: return MediatorResult.Success(
+                        endOfPaginationReached = remoteKeys != null
+                    )
+                    prevPage
+                }
+
                 LoadType.APPEND -> {
-                    val lastItem = state.lastItemOrNull() ?: return RemoteMediator.MediatorResult.Success(endOfPaginationReached = true)
-                    // Assuming you have a way to calculate the next page
-                    (lastItem.id ?: 0) + 1
+                    val remoteKeys = getRemoteKeyForLastItem(state)
+                    val nextPage = remoteKeys?.nextPage ?: return MediatorResult.Success(
+                        endOfPaginationReached = remoteKeys != null
+                    )
+                    nextPage
                 }
             }
 
-            // Fetch data from the remote API
-            val response = newsApiService.getEverythingNews(page = page, pageSize = state.config.pageSize)
 
-            // Insert data into the database
-            newsDatabase.withTransaction {
+            val responseData = apiService.getEverythingNews(
+                page = currentPage,
+                pageSize = state.config.pageSize
+            ).articles
+
+            val newsEntities = responseData?.map { article ->
+                DataMapper.mapResponseToEntity(article)
+            } ?: emptyList()
+            val endOfPaginationReached = newsEntities.isEmpty()
+
+            val prevPage = if (currentPage == 1) null else currentPage - 1
+            val nextPage = if (endOfPaginationReached) null else currentPage + 1
+
+            database.withTransaction {
                 if (loadType == LoadType.REFRESH) {
-                    newsDatabase.newsDao().clearAllNews()
+                    newsDao.deleteAllNews()
+                    newsDao.deleteAllRemoteKeys()
                 }
-                val newsEntities = response.articles?.map { article ->
-                    DataMapper.mapResponseToEntity(article)
-                } ?: emptyList()
-                newsDatabase.newsDao().insertNews(newsEntities)
-            }
 
-            RemoteMediator.MediatorResult.Success(endOfPaginationReached = response.articles.isNullOrEmpty())
-        } catch (e: IOException) {
-            RemoteMediator.MediatorResult.Error(e)
-        } catch (e: HttpException) {
-            RemoteMediator.MediatorResult.Error(e)
+                val keys = newsEntities.map { newsEntity ->
+                    NewsRemoteKeys(
+                        id = newsEntity.id,
+                        prevPage = prevPage,
+                        nextPage = nextPage
+                    )
+                }
+
+                newsDao.insertNews(newsEntities)
+                newsDao.insertAllRemoteKeys(keys)
+            }
+            return MediatorResult.Success(
+                endOfPaginationReached = endOfPaginationReached
+            )
+
+        } catch (e: Exception) {
+            return MediatorResult.Error(e)
         }
+    }
+
+    private suspend fun getRemoteKeyClosestToCurrentPosition(
+        state: PagingState<Int, NewsEntity>,
+    ): NewsRemoteKeys? {
+        return state.anchorPosition?.let { position ->
+            state.closestItemToPosition(position)?.id?.let { id ->
+                newsDao.getRemoteKeys(id = id)
+            }
+        }
+    }
+
+    private suspend fun getRemoteKeyForFirstItem(
+        state: PagingState<Int, NewsEntity>,
+    ): NewsRemoteKeys? {
+        return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()
+            ?.let { unsplashImage ->
+                newsDao.getRemoteKeys(id = unsplashImage.id)
+            }
+    }
+
+    private suspend fun getRemoteKeyForLastItem(
+        state: PagingState<Int, NewsEntity>,
+    ): NewsRemoteKeys? {
+        return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()
+            ?.let { unsplashImage ->
+                newsDao.getRemoteKeys(id = unsplashImage.id)
+            }
     }
 }

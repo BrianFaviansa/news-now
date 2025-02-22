@@ -15,6 +15,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.faviansa.newsnow.ui.components.HeadlineNewsCard
+import com.faviansa.newsnow.ui.components.NewsCard
 import com.faviansa.newsnow.ui.navigation.NewsNowBottomNav
 
 @Composable
@@ -35,25 +38,37 @@ fun HomeScreen(
             )
         }
     ) { paddingValues ->
-        Column (
+        Column(
             modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+            Text(
+                text = "Headline News",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(16.dp)
+            )
+
             LazyRow {
-                item {
-                    Text(
-                        text = "Headline News",
-                        style = MaterialTheme.typography.headlineMedium
+                items() { news ->
+                    HeadlineNewsCard(
+                        news = news,
+                        onNewsClick = { /* Handle click */ }
                     )
                 }
-
             }
+
+            Text(
+                text = "Recommended for you",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(16.dp)
+            )
+
             LazyColumn {
-                item {
-                    Text(
-                        text = "Recommended for you",
-                        style = MaterialTheme.typography.headlineMedium
+                items() { news ->
+                    NewsCard(
+                        news = news,
+                        onNewsClick = { /* Handle click */ }
                     )
                 }
             }
