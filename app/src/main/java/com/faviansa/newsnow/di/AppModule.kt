@@ -6,6 +6,7 @@ import com.faviansa.newsnow.BuildConfig
 import com.faviansa.newsnow.data.local.database.NewsDatabase
 import com.faviansa.newsnow.data.remote.NewsApiService
 import com.faviansa.newsnow.data.repository.NewsRepository
+import com.faviansa.newsnow.domain.repository.INewsRepository
 import com.faviansa.newsnow.utils.Constants
 import dagger.Module
 import dagger.Provides
@@ -66,7 +67,7 @@ object AppModule {
     fun provideNewsRepository(
         newsApiService: NewsApiService,
         database: NewsDatabase
-    ): NewsRepository {
+    ): INewsRepository {
         return NewsRepository(newsApiService, database)
     }
 }
