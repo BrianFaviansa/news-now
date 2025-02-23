@@ -16,8 +16,9 @@ import com.faviansa.newsnow.domain.repository.INewsRepository
 import com.faviansa.newsnow.utils.Constants.ITEMS_PER_PAGE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class NewsRepository(
+class NewsRepository @Inject constructor(
     private val apiService: NewsApiService,
     private val database: NewsDatabase,
 ) : INewsRepository {

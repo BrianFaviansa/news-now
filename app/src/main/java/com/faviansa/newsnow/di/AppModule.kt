@@ -8,6 +8,7 @@ import com.faviansa.newsnow.data.remote.NewsApiService
 import com.faviansa.newsnow.data.repository.NewsRepository
 import com.faviansa.newsnow.domain.repository.INewsRepository
 import com.faviansa.newsnow.utils.Constants
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,6 +20,16 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class RepositoryModule {
+    @Binds
+    @Singleton
+    abstract fun bindNewsRepository(
+        newsRepository: NewsRepository
+    ): INewsRepository
+}
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -54,20 +65,11 @@ object AppModule {
     @Singleton
     fun provideNewsDatabase(
         @ApplicationContext context: Context
-    ) : NewsDatabase {
+    ): NewsDatabase {
         return Room.databaseBuilder(
             context,
             NewsDatabase::class.java,
             "news.db"
         ).build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideNewsRepository(
-        newsApiService: NewsApiService,
-        database: NewsDatabase
-    ): INewsRepository {
-        return NewsRepository(newsApiService, database)
     }
 }
