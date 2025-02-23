@@ -7,6 +7,7 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import com.faviansa.newsnow.data.local.database.NewsDatabase
 import com.faviansa.newsnow.data.mapper.DataMapper
+import com.faviansa.newsnow.data.paging.HeadlineNewsPagingSource
 import com.faviansa.newsnow.data.paging.NewsRemoteMediator
 import com.faviansa.newsnow.data.paging.SearchPagingSource
 import com.faviansa.newsnow.data.remote.NewsApiService
@@ -18,7 +19,7 @@ import kotlinx.coroutines.flow.map
 
 class NewsRepository(
     private val apiService: NewsApiService,
-    private val database: NewsDatabase
+    private val database: NewsDatabase,
 ) : INewsRepository {
 
     private val newsDao = database.newsDao()
@@ -29,10 +30,21 @@ class NewsRepository(
         return Pager(
             config = PagingConfig(pageSize = ITEMS_PER_PAGE),
             remoteMediator = NewsRemoteMediator(apiService, database),
-            pagingSourceFactory = {newsDao.getAllNews()}
+            pagingSourceFactory = { newsDao.getAllNews() }
         ).flow.map { pagingData ->
             pagingData.map { newsEntity ->
                 DataMapper.mapEntityToDomain(newsEntity)
+            }
+        }
+    }
+
+    override fun getHeadlineNews(): Flow<PagingData<News>> {
+        return Pager(
+            config = PagingConfig(pageSize = ITEMS_PER_PAGE),
+            pagingSourceFactory = { HeadlineNewsPagingSource(apiService) }
+        ).flow.map { pagingData ->
+            pagingData.map { news ->
+                DataMapper.mapResponseToDomain(news)
             }
         }
     }

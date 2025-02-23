@@ -6,7 +6,7 @@ import com.faviansa.newsnow.data.local.entity.NewsEntity
 import com.faviansa.newsnow.data.mapper.DataMapper
 import com.faviansa.newsnow.data.remote.NewsApiService
 
-class SearchPagingSource(
+class SearchPagingSource (
     private val query: String,
     private val apiService: NewsApiService
 ) : PagingSource<Int, NewsEntity>() {

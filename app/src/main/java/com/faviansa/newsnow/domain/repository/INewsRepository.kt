@@ -8,6 +8,8 @@ interface INewsRepository {
 
     fun getAllNews() : Flow<PagingData<News>>
 
+    fun getHeadlineNews(): Flow<PagingData<News>>
+
     suspend fun getNews(newsId: Int) : News
 
     fun searchNews(query: String): Flow<PagingData<News>>

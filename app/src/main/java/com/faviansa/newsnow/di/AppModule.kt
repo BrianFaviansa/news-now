@@ -1,12 +1,16 @@
 package com.faviansa.newsnow.di
 
+import android.content.Context
+import androidx.room.Room
 import com.faviansa.newsnow.BuildConfig
+import com.faviansa.newsnow.data.local.database.NewsDatabase
 import com.faviansa.newsnow.data.remote.NewsApiService
 import com.faviansa.newsnow.data.repository.NewsRepository
 import com.faviansa.newsnow.utils.Constants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -47,9 +51,22 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideNewsDatabase(
+        @ApplicationContext context: Context
+    ) : NewsDatabase {
+        return Room.databaseBuilder(
+            context,
+            NewsDatabase::class.java,
+            "news.db"
+        ).build()
+    }
+
+    @Provides
+    @Singleton
     fun provideNewsRepository(
         newsApiService: NewsApiService,
+        database: NewsDatabase
     ): NewsRepository {
-        return NewsRepository(newsApiService)
+        return NewsRepository(newsApiService, database)
     }
 }

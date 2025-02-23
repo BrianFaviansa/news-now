@@ -5,7 +5,7 @@ import androidx.paging.PagingState
 import com.faviansa.newsnow.data.remote.NewsApiService
 import com.faviansa.newsnow.data.remote.response.ArticlesItem
 
-class NewsPagingSource (
+class HeadlineNewsPagingSource(
     private val apiService: NewsApiService,
 ) : PagingSource<Int, ArticlesItem>() {
 
@@ -23,7 +23,7 @@ class NewsPagingSource (
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ArticlesItem> {
         return try {
             val page = params.key ?: INITIAL_PAGE_INDEX
-            val response = apiService.getEverythingNews(
+            val response = apiService.getHeadlineNews(
                 page = page,
                 pageSize = params.loadSize
             )

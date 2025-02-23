@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.coil.network.okhttp)
 
     implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
 
     implementation(libs.kotlinx.serialization.json)
