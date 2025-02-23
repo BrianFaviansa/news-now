@@ -30,6 +30,7 @@ import com.faviansa.newsnow.utils.ToastEvent
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigate: (Int) -> Unit,
+    onNewsClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -76,7 +77,7 @@ fun HomeScreen(
                     if (headlineNewsItem != null) {
                         HeadlineNewsCard(
                             news = headlineNewsItem,
-                            onNewsClick = { /* Handle click */ }
+                            onNewsClick = { onNewsClick }
                         )
                     } else {
                         // Placeholder jika data null
@@ -97,7 +98,7 @@ fun HomeScreen(
                     if (economicNewsItem != null) {
                         NewsCard(
                             news = economicNewsItem,
-                            onNewsClick = { /* Handle click */ }
+                            onNewsClick = { onNewsClick }
                         )
                     } else {
                         // Placeholder jika data null
@@ -114,7 +115,8 @@ fun HomeScreen(
 private fun HomeScreenPreview() {
     MaterialTheme {
         HomeScreen(
-            onNavigate = {}
+            onNavigate = {},
+            onNewsClick = {}
         )
     }
 }

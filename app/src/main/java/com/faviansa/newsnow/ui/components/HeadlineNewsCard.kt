@@ -30,7 +30,7 @@ import com.faviansa.newsnow.domain.model.News
 fun HeadlineNewsCard(
     news: News,
     modifier: Modifier = Modifier,
-    onNewsClick: (News) -> Unit
+    onNewsClick: (String) -> Unit
 ) {
     val newsImageRequest = ImageRequest.Builder(LocalContext.current)
         .data(news.urlToImage)
@@ -42,7 +42,7 @@ fun HeadlineNewsCard(
             .width(300.dp)
             .height(200.dp)
             .padding(8.dp)
-            .clickable { onNewsClick(news) },
+            .clickable { onNewsClick(news.url) },
         shape = RoundedCornerShape(12.dp)
     ) {
 

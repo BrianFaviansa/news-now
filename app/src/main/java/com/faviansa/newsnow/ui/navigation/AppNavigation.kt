@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.faviansa.newsnow.ui.detail.DetailScreen
 import com.faviansa.newsnow.ui.favorite.FavoriteScreen
 import com.faviansa.newsnow.ui.home.HomeScreen
@@ -27,13 +28,17 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                         1 -> navController.navigate(Routes.Search)
                         2 -> navController.navigate(Routes.Favorite)
                     }
+                },
+                onNewsClick = { newsUrl ->
+                    navController.navigate(Routes.NewsDetail(newsUrl))
                 }
             )
         }
-        composable<Routes.NewsDetail> {
+        composable<Routes.NewsDetail> { backStackEntry ->
+            val newsLink = backStackEntry.toRoute<Routes.NewsDetail>().newsLink
             DetailScreen(
                 onNavigateUp = { navController.navigateUp() },
-                newsLink = ""
+                newsLink = newsLink
             )
         }
         composable<Routes.Search> {
