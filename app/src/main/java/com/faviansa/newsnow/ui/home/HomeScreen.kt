@@ -77,7 +77,7 @@ fun HomeScreen(
                     if (headlineNewsItem != null) {
                         HeadlineNewsCard(
                             news = headlineNewsItem,
-                            onNewsClick = { onNewsClick }
+                            onNewsClick = onNewsClick
                         )
                     } else {
                         // Placeholder jika data null
@@ -98,7 +98,7 @@ fun HomeScreen(
                     if (economicNewsItem != null) {
                         NewsCard(
                             news = economicNewsItem,
-                            onNewsClick = { onNewsClick }
+                            onNewsClick = onNewsClick
                         )
                     } else {
                         // Placeholder jika data null
