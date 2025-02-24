@@ -1,4 +1,4 @@
-package com.faviansa.newsnow.ui.favorite
+package com.faviansa.newsnow.ui.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +9,7 @@ import com.faviansa.newsnow.domain.model.News
 import com.faviansa.newsnow.utils.SnackbarEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -18,25 +19,29 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class FavoriteViewModel @Inject constructor(
-    private val repository: NewsRepository
+class SearchViewModel @Inject constructor(
+    private val repository: NewsRepository,
 ) : ViewModel() {
 
     private val _snackbarEvent = Channel<SnackbarEvent>()
-    val toastEvent = _snackbarEvent.receiveAsFlow()
+    val snackbarEvent = _snackbarEvent.receiveAsFlow()
 
-    val favoriteNews: StateFlow<PagingData<News>> = repository.getAllFavoriteNews()
-        .catch { exception ->
-            _snackbarEvent.send(
-                SnackbarEvent(message = "Something went wrong: ${exception.message}")
-            )
+    private val _searchNews = MutableStateFlow<PagingData<News>>(PagingData.empty())
+    val searchImages = _searchNews
+
+    fun searchNews(query: String) {
+        viewModelScope.launch {
+            try {
+                repository.searchNews(query)
+                    .cachedIn(viewModelScope)
+                    .collect { _searchNews.value = it }
+            } catch (e: Exception) {
+                _snackbarEvent.send(
+                    SnackbarEvent(message = "Something went wrong. ${e.message}")
+                )
+            }
         }
-        .cachedIn(viewModelScope)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-            initialValue = PagingData.empty()
-        )
+    }
 
     val favoriteTitles: StateFlow<List<String>> = repository.getFavoriteNewsTitles()
         .catch { exception ->
@@ -61,4 +66,5 @@ class FavoriteViewModel @Inject constructor(
             }
         }
     }
+
 }

@@ -6,7 +6,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.faviansa.newsnow.data.repository.NewsRepository
 import com.faviansa.newsnow.domain.model.News
-import com.faviansa.newsnow.utils.ToastEvent
+import com.faviansa.newsnow.utils.SnackbarEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,13 +22,13 @@ class HomeViewModel @Inject constructor(
     private val repository: NewsRepository
 ) : ViewModel() {
 
-    private val _toastEvent = Channel<ToastEvent>()
-    val toastEvent = _toastEvent.receiveAsFlow()
+    private val _snackbarEvent = Channel<SnackbarEvent>()
+    val toastEvent = _snackbarEvent.receiveAsFlow()
 
     val economicNews: StateFlow<PagingData<News>> = repository.getAllNews()
         .catch { exception ->
-            _toastEvent.send(
-                ToastEvent.Show(message = "Failed to load economic news: ${exception.message}")
+            _snackbarEvent.send(
+                SnackbarEvent(message = "Failed to load economic news: ${exception.message}")
             )
         }
         .cachedIn(viewModelScope)
@@ -40,8 +40,8 @@ class HomeViewModel @Inject constructor(
 
     val headlineNews: StateFlow<PagingData<News>> = repository.getHeadlineNews()
         .catch { exception ->
-            _toastEvent.send(
-                ToastEvent.Show(message = "Failed to load headline news: ${exception.message}")
+            _snackbarEvent.send(
+                SnackbarEvent(message = "Failed to load headline news: ${exception.message}")
             )
         }
         .cachedIn(viewModelScope)
@@ -53,8 +53,8 @@ class HomeViewModel @Inject constructor(
 
     val favoriteTitles: StateFlow<List<String>> = repository.getFavoriteNewsTitles()
         .catch { exception ->
-            _toastEvent.send(
-                ToastEvent.Show(message = "Failed to load headline news: ${exception.message}")
+            _snackbarEvent.send(
+                SnackbarEvent(message = "Failed to load headline news: ${exception.message}")
             )
         }
         .stateIn(
@@ -68,8 +68,8 @@ class HomeViewModel @Inject constructor(
             try {
                 repository.toggleFavoriteStatus(news)
             } catch (e: Exception) {
-                _toastEvent.send(
-                    ToastEvent.Show(message = "Something went wrong. ${e.message}")
+                _snackbarEvent.send(
+                    SnackbarEvent(message = "Something went wrong. ${e.message}")
                 )
             }
         }

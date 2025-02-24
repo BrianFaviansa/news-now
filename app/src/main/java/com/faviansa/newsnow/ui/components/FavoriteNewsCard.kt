@@ -1,5 +1,6 @@
 package com.faviansa.newsnow.ui.components
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -41,7 +42,9 @@ fun FavoriteNewsCard(
     onNewsClick: (String) -> Unit,
     onToggleFavorite: (News) -> Unit,
 ) {
-    val newsImageRequest = ImageRequest.Builder(LocalContext.current)
+    val context = LocalContext.current
+
+    val newsImageRequest = ImageRequest.Builder(context)
         .data(news.urlToImage)
         .crossfade(true)
         .build()
@@ -83,7 +86,14 @@ fun FavoriteNewsCard(
 
             // Bookmark button
             IconButton(
-                onClick = { onToggleFavorite(news) },
+                onClick = {
+                    onToggleFavorite(news)
+                    if (isFavorite) {
+                        Toast.makeText(context, "Removed from Favorites", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Added to Favorites", Toast.LENGTH_SHORT).show()
+                    }
+                },
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(8.dp)

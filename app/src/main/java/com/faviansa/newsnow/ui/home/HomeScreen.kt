@@ -27,7 +27,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.faviansa.newsnow.ui.components.HeadlineNewsCard
 import com.faviansa.newsnow.ui.components.NewsCard
 import com.faviansa.newsnow.ui.navigation.NewsNowBottomNav
-import com.faviansa.newsnow.utils.ToastEvent
+import com.faviansa.newsnow.utils.SnackbarEvent
 
 @Composable
 fun HomeScreen(
@@ -46,7 +46,7 @@ fun HomeScreen(
     LaunchedEffect(key1 = true) {
         viewModel.toastEvent.collect { event ->
             when (event) {
-                is ToastEvent.Show -> {
+                is SnackbarEvent.Show -> {
                     Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
                 }
             }
