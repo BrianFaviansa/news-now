@@ -1,6 +1,5 @@
 package com.faviansa.newsnow.ui.home
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -10,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -18,38 +18,35 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.LazyPagingItems
+import com.faviansa.newsnow.domain.model.News
 import com.faviansa.newsnow.ui.components.HeadlineNewsCard
 import com.faviansa.newsnow.ui.components.NewsCard
 import com.faviansa.newsnow.ui.navigation.NewsNowBottomNav
 import com.faviansa.newsnow.utils.SnackbarEvent
+import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = hiltViewModel(),
     onNavigate: (Int) -> Unit,
+    snackbarHostState: SnackbarHostState,
+    snackbarEvent: Flow<SnackbarEvent>,
     onNewsClick: (String) -> Unit,
+    headlineNews: LazyPagingItems<News>,
+    economicNews: LazyPagingItems<News>,
+    favoriteNewsTitles: List<String>,
+    onToggleFavorite: (News) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
     var selectedItem by remember { mutableIntStateOf(0) }
 
-    val headlineNews = viewModel.headlineNews.collectAsLazyPagingItems()
-    val economicNews = viewModel.economicNews.collectAsLazyPagingItems()
-    val favoriteNewsTitles by viewModel.favoriteTitles.collectAsStateWithLifecycle()
-
     LaunchedEffect(key1 = true) {
-        viewModel.toastEvent.collect { event ->
-            when (event) {
-                is SnackbarEvent.Show -> {
-                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
-                }
-            }
+        snackbarEvent.collect { event ->
+            snackbarHostState.showSnackbar(
+                message = event.message,
+                duration = event.duration
+            )
         }
     }
 
@@ -83,7 +80,7 @@ fun HomeScreen(
                             news = headlineNewsItem,
                             onNewsClick = onNewsClick,
                             isFavorite = favoriteNewsTitles.contains(headlineNewsItem.title),
-                            onToggleFavorite = { viewModel.toggleFavoriteStatus(headlineNewsItem) }
+                            onToggleFavorite = onToggleFavorite
                         )
                     } else {
                         LinearProgressIndicator(
@@ -107,7 +104,7 @@ fun HomeScreen(
                             news = economicNewsItem,
                             onNewsClick = onNewsClick,
                             isFavorite = favoriteNewsTitles.contains(economicNewsItem.title),
-                            onToggleFavorite = { viewModel.toggleFavoriteStatus(economicNewsItem) }
+                            onToggleFavorite = onToggleFavorite
                         )
                     } else {
                         LinearProgressIndicator(
@@ -120,13 +117,3 @@ fun HomeScreen(
     }
 }
 
-@Preview
-@Composable
-private fun HomeScreenPreview() {
-    MaterialTheme {
-        HomeScreen(
-            onNavigate = {},
-            onNewsClick = {}
-        )
-    }
-}

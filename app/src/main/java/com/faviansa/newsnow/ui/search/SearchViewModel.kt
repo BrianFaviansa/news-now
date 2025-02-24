@@ -26,15 +26,15 @@ class SearchViewModel @Inject constructor(
     private val _snackbarEvent = Channel<SnackbarEvent>()
     val snackbarEvent = _snackbarEvent.receiveAsFlow()
 
-    private val _searchNews = MutableStateFlow<PagingData<News>>(PagingData.empty())
-    val searchImages = _searchNews
+    private val _searchedNews = MutableStateFlow<PagingData<News>>(PagingData.empty())
+    val searchedNews = _searchedNews
 
     fun searchNews(query: String) {
         viewModelScope.launch {
             try {
                 repository.searchNews(query)
                     .cachedIn(viewModelScope)
-                    .collect { _searchNews.value = it }
+                    .collect { _searchedNews.value = it }
             } catch (e: Exception) {
                 _snackbarEvent.send(
                     SnackbarEvent(message = "Something went wrong. ${e.message}")

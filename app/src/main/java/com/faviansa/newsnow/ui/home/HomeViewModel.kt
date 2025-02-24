@@ -23,7 +23,7 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _snackbarEvent = Channel<SnackbarEvent>()
-    val toastEvent = _snackbarEvent.receiveAsFlow()
+    val snackbarEvent = _snackbarEvent.receiveAsFlow()
 
     val economicNews: StateFlow<PagingData<News>> = repository.getAllNews()
         .catch { exception ->

@@ -23,7 +23,7 @@ class FavoriteViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _snackbarEvent = Channel<SnackbarEvent>()
-    val toastEvent = _snackbarEvent.receiveAsFlow()
+    val snackbarEvent = _snackbarEvent.receiveAsFlow()
 
     val favoriteNews: StateFlow<PagingData<News>> = repository.getAllFavoriteNews()
         .catch { exception ->
