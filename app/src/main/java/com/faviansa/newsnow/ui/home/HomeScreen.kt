@@ -4,8 +4,10 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -20,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.faviansa.newsnow.ui.components.HeadlineNewsCard
 import com.faviansa.newsnow.ui.components.NewsCard
@@ -38,6 +41,7 @@ fun HomeScreen(
 
     val headlineNews = viewModel.headlineNews.collectAsLazyPagingItems()
     val economicNews = viewModel.economicNews.collectAsLazyPagingItems()
+    val favoriteNewsIds by viewModel.favoriteNewsIds.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = true) {
         viewModel.toastEvent.collect { event ->
@@ -77,11 +81,14 @@ fun HomeScreen(
                     if (headlineNewsItem != null) {
                         HeadlineNewsCard(
                             news = headlineNewsItem,
-                            onNewsClick = onNewsClick
+                            onNewsClick = onNewsClick,
+                            isFavorite = favoriteNewsIds.contains(headlineNewsItem.id),
+                            onToggleFavorite = { viewModel.toggleFavoriteStatus(headlineNewsItem) }
                         )
                     } else {
-                        // Placeholder jika data null
-                        Text(text = "Loading...", modifier = Modifier.padding(8.dp))
+                        LinearProgressIndicator(
+                            modifier = Modifier.size(48.dp)
+                        )
                     }
                 }
             }
@@ -98,11 +105,14 @@ fun HomeScreen(
                     if (economicNewsItem != null) {
                         NewsCard(
                             news = economicNewsItem,
-                            onNewsClick = onNewsClick
+                            onNewsClick = onNewsClick,
+                            isFavorite = favoriteNewsIds.contains(economicNewsItem.id),
+                            onToggleFavorite = { viewModel.toggleFavoriteStatus(economicNewsItem) }
                         )
                     } else {
-                        // Placeholder jika data null
-                        Text(text = "Loading...", modifier = Modifier.padding(8.dp))
+                        LinearProgressIndicator(
+                            modifier = Modifier.size(48.dp)
+                        )
                     }
                 }
             }

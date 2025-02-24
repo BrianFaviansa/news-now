@@ -9,7 +9,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,7 +37,9 @@ import com.faviansa.newsnow.utils.Helper
 fun HeadlineNewsCard(
     news: News,
     modifier: Modifier = Modifier,
-    onNewsClick: (String) -> Unit
+    isFavorite: Boolean,
+    onNewsClick: (String) -> Unit,
+    onToggleFavorite: (News) -> Unit,
 ) {
     val newsImageRequest = ImageRequest.Builder(LocalContext.current)
         .data(news.urlToImage)
@@ -44,9 +52,13 @@ fun HeadlineNewsCard(
             .height(200.dp)
             .padding(8.dp)
             .clickable { onNewsClick(news.url) },
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 6.dp,
+            pressedElevation = 8.dp,
+            focusedElevation = 8.dp
+        )
     ) {
-
         Box {
             AsyncImage(
                 model = newsImageRequest,
@@ -55,7 +67,7 @@ fun HeadlineNewsCard(
                 modifier = Modifier.fillMaxSize()
             )
 
-            // Gradient overlay for better text readability
+            // Gradient overlay
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -63,11 +75,25 @@ fun HeadlineNewsCard(
                         brush = Brush.verticalGradient(
                             colors = listOf(
                                 Color.Transparent,
-                                Color.Black.copy(alpha = 0.7f)
+                                Color.Black.copy(alpha = 0.75f)
                             )
                         )
                     )
             )
+
+            // Bookmark button
+            IconButton(
+                onClick = { onToggleFavorite(news) },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+            ) {
+                Icon(
+                    imageVector = if (isFavorite) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder,
+                    contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                    tint = Color.White
+                )
+            }
 
             Column(
                 modifier = Modifier
@@ -85,7 +111,7 @@ fun HeadlineNewsCard(
                 Text(
                     text = Helper.formatCardDate(news.publishedAt),
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.White.copy(alpha = 0.7f),
+                    color = Color.White.copy(alpha = 0.8f),
                     maxLines = 1
                 )
             }

@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -49,5 +50,30 @@ class HomeViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
             initialValue = PagingData.empty()
         )
+
+    val favoriteNewsIds: StateFlow<List<Int>> = repository.getFavoriteNewsIds()
+        .catch { exception ->
+            _toastEvent.send(
+                ToastEvent.Show(message = "Something went wrong: ${exception.message}")
+            )
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+            initialValue = emptyList()
+        )
+
+    fun toggleFavoriteStatus(news: News) {
+        viewModelScope.launch {
+            try {
+                repository.toggleFavoriteStatus(news)
+            } catch (e: Exception) {
+                _toastEvent.send(
+                    ToastEvent.Show(message = "Something went wrong. ${e.message}")
+                )
+            }
+        }
+    }
+
 
 }
