@@ -28,7 +28,7 @@ class NewsPagingSource (
                 pageSize = params.loadSize
             )
 
-            val articles = response.articles ?: emptyList()
+            val articles = response.articles
 
             LoadResult.Page(
                 data = articles,
