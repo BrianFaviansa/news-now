@@ -41,7 +41,7 @@ fun HomeScreen(
 
     val headlineNews = viewModel.headlineNews.collectAsLazyPagingItems()
     val economicNews = viewModel.economicNews.collectAsLazyPagingItems()
-    val favoriteNewsIds by viewModel.favoriteNewsIds.collectAsStateWithLifecycle()
+    val favoriteNewsTitles by viewModel.favoriteTitles.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = true) {
         viewModel.toastEvent.collect { event ->
@@ -82,7 +82,7 @@ fun HomeScreen(
                         HeadlineNewsCard(
                             news = headlineNewsItem,
                             onNewsClick = onNewsClick,
-                            isFavorite = favoriteNewsIds.contains(headlineNewsItem.id),
+                            isFavorite = favoriteNewsTitles.contains(headlineNewsItem.title),
                             onToggleFavorite = { viewModel.toggleFavoriteStatus(headlineNewsItem) }
                         )
                     } else {
@@ -106,7 +106,7 @@ fun HomeScreen(
                         NewsCard(
                             news = economicNewsItem,
                             onNewsClick = onNewsClick,
-                            isFavorite = favoriteNewsIds.contains(economicNewsItem.id),
+                            isFavorite = favoriteNewsTitles.contains(economicNewsItem.title),
                             onToggleFavorite = { viewModel.toggleFavoriteStatus(economicNewsItem) }
                         )
                     } else {

@@ -60,6 +60,9 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                         1 -> navController.navigate(Routes.Search)
                         2 -> {}
                     }
+                },
+                onNewsClick = { newsUrl ->
+                    navController.navigate(Routes.NewsDetail(newsUrl))
                 }
             )
         }

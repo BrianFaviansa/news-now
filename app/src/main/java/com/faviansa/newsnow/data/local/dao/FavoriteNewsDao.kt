@@ -19,9 +19,9 @@ interface FavoriteNewsDao {
     @Delete
     suspend fun deleteFavoriteNews(news: FavoriteNewsEntity)
 
-    @Query("SELECT EXISTS(SELECT 1 FROM favorite_news WHERE id = :id)")
-    suspend fun isNewsFavorite(id: Int): Boolean
+    @Query("SELECT EXISTS(SELECT 1 FROM favorite_news WHERE title = :title)")
+    suspend fun isNewsFavorite(title: String): Boolean
 
-    @Query("SELECT id FROM favorite_news")
-    fun getFavoriteNewsIds(): Flow<List<Int>>
+    @Query("SELECT title FROM favorite_news")
+    fun getFavoriteTitles(): Flow<List<String>>
 }

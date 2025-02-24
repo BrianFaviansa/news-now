@@ -18,5 +18,5 @@ interface INewsRepository {
 
     suspend fun toggleFavoriteStatus(news: News)
 
-    fun getFavoriteNewsIds() : Flow<List<Int>>
+    fun getFavoriteNewsTitles(): Flow<List<String>>
 }

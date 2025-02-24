@@ -1,4 +1,4 @@
-package com.faviansa.newsnow.ui.home
+package com.faviansa.newsnow.ui.favorite
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,30 +18,17 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+class FavoriteViewModel @Inject constructor(
     private val repository: NewsRepository
 ) : ViewModel() {
 
     private val _toastEvent = Channel<ToastEvent>()
     val toastEvent = _toastEvent.receiveAsFlow()
 
-    val economicNews: StateFlow<PagingData<News>> = repository.getAllNews()
+    val favoriteNews: StateFlow<PagingData<News>> = repository.getAllFavoriteNews()
         .catch { exception ->
             _toastEvent.send(
-                ToastEvent.Show(message = "Failed to load economic news: ${exception.message}")
-            )
-        }
-        .cachedIn(viewModelScope)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-            initialValue = PagingData.empty()
-        )
-
-    val headlineNews: StateFlow<PagingData<News>> = repository.getHeadlineNews()
-        .catch { exception ->
-            _toastEvent.send(
-                ToastEvent.Show(message = "Failed to load headline news: ${exception.message}")
+                ToastEvent.Show(message = "Something went wrong: ${exception.message}")
             )
         }
         .cachedIn(viewModelScope)
@@ -74,6 +61,4 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
-
-
 }

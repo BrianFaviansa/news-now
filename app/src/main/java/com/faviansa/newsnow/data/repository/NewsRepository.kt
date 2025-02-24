@@ -83,7 +83,7 @@ class NewsRepository @Inject constructor(
     }
 
     override suspend fun toggleFavoriteStatus(news: News) {
-        val isFavorite = favoriteNewsDao.isNewsFavorite(news.id)
+        val isFavorite = favoriteNewsDao.isNewsFavorite(news.title)
         val favoriteNews = DataMapper.mapFavoriteToEntity(news)
         if (isFavorite) {
             favoriteNewsDao.deleteFavoriteNews(favoriteNews)
@@ -92,8 +92,8 @@ class NewsRepository @Inject constructor(
         }
     }
 
-    override fun getFavoriteNewsIds(): Flow<List<Int>> {
-        return favoriteNewsDao.getFavoriteNewsIds()
+    override fun getFavoriteNewsTitles(): Flow<List<String>> {
+        return favoriteNewsDao.getFavoriteTitles()
     }
 
 }
