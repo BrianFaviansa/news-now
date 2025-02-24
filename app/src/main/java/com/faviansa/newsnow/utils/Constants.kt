@@ -9,11 +9,7 @@ object Constants {
     const val ITEMS_PER_PAGE = 10
 
     val searchKeywords: List<String> = listOf(
-        "Election",
-        "Corruption",
-        "Natural disaster",
         "Politics",
-        "Economy",
         "Health",
         "Environment",
         "Crime",
@@ -22,6 +18,10 @@ object Constants {
         "Sports",
         "Entertainment",
         "Business",
+        "Economy",
+        "Election",
+        "Corruption",
+        "Natural disaster",
         "Climate change",
         "Human rights"
     )

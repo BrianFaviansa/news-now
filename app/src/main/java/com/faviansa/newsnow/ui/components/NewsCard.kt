@@ -64,7 +64,7 @@ fun NewsCard(
     ) {
         Row(
             modifier = Modifier
-                .height(120.dp)
+                .height(125.dp)
                 .padding(8.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -136,14 +136,14 @@ fun NewsCard(
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.Gray,
                         maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
 
                 Text(
                     text = Helper.formatCardDate(news.publishedAt),
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color.Gray
+                    color = Color.DarkGray
                 )
             }
         }

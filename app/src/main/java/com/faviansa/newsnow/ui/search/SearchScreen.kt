@@ -99,6 +99,7 @@ fun SearchScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .padding(horizontal = 4.dp)
         ) {
             SearchBar(
                 modifier = Modifier
@@ -120,7 +121,6 @@ fun SearchScreen(
                     IconButton(
                         onClick = {
                             if (searchQuery.isNotEmpty()) onSearchQueryChange("")
-                            else onBackClick()
                         }
                     ) {
                         Icon(imageVector = Icons.Filled.Close, contentDescription = "Close")
