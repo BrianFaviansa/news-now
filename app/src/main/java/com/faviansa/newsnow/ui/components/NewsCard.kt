@@ -25,6 +25,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.faviansa.newsnow.domain.model.News
+import com.faviansa.newsnow.utils.Helper
 
 @Composable
 fun NewsCard(
@@ -91,7 +92,7 @@ fun NewsCard(
                 }
 
                 Text(
-                    text = news.publishedAt,
+                    text = Helper.formatCardDate(news.publishedAt),
                     style = MaterialTheme.typography.labelSmall,
                     color = Color.Gray
                 )
